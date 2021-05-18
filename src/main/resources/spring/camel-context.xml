@@ -17,11 +17,11 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://192.168.10.235:31867/training?autoReconnect=true&amp;useSSL=false"/>
         <property name="username" value="root"/>
-        <property name="password" value="rootpassword"/>
+        <property name="password" value="root"/>
     </bean>
     <camelContext id="camel" typeConverterStatisticsEnabled="true" xmlns="http://camel.apache.org/schema/spring">
         <restConfiguration bindingMode="json" component="jetty"
-            host="0.0.0.0" port="8443"/>
+            host="0.0.0.0" port="8080"/>
         <rest id="rest" path="/api/overdraft-detail">
             <get id="rest-id"
                 outType="org.mycompany.models.OverdraftDetailType" uri="/id/{id}">
