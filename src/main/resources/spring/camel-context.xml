@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       https://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.apache.camel.component.jpa.JpaComponent" id="jpa">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="transactionManager" ref="jpaTxManager"/>
+    </bean>
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="jpaTxManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+    <bean
+        class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean" id="entityManagerFactory">
+        <property name="persistenceUnitName" value="persistenceUnit"/>
+    </bean>
+    <bean
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="mysqltestDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://192.168.10.235:31867/training?autoReconnect=true&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="rootpassword"/>
+    </bean>
+    <camelContext id="camel" typeConverterStatisticsEnabled="true" xmlns="http://camel.apache.org/schema/spring">
+        <restConfiguration bindingMode="json" component="jetty"
+            host="0.0.0.0" port="8443"/>
+        <rest id="rest" path="/api/overdraft-detail">
+            <get id="rest-id"
+                outType="org.mycompany.models.OverdraftDetailType" uri="/id/{id}">
+                <to uri="direct:getOverdraftDetail"/>
+            </get>
+        </rest>
+        <route id="getOverdraftDetail">
+            <from id="_form1" uri="direct:getOverdraftDetail"/>
+            <toD id="_to6" uri="jpa:org.mycompany.models.OverdraftDetailType?query= select o from org.mycompany.models.OverdraftDetailType o where o.id=${header.id}&amp;useExecuteUpdate=false"/>
+            <to id="_to" uri="mock:out"/>
+        </route>
+    </camelContext>
+</beans>
